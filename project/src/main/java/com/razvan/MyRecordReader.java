@@ -12,14 +12,14 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
 public class MyRecordReader
-        extends LineRecordReader {
+        extends MyLineRecordReader {
     private long lineIndex = 0;
 
     @Override
     public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException {
         MyInputSplit myInputSplit = (MyInputSplit)genericSplit;
         super.initialize(genericSplit, context);
-        this.lineIndex = myInputSplit.index;
+        this.lineIndex = myInputSplit.index -1;
     }
 
     @Override

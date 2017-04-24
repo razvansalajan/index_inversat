@@ -1,6 +1,7 @@
-com/razvan/MyInputSplit.class
 com/razvan/MyRecordReader.class
-com/razvan/Main.class
+com/razvan/MyLineRecordReader.class
 com/razvan/reducer/FindLinesReducer.class
 com/razvan/MyInputFormat.class
+com/razvan/MyInputSplit.class
+com/razvan/Main.class
 com/razvan/mapper/FindLinesMapper.class

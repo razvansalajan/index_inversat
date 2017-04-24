@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.razvan.MyInputSplit;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -23,7 +24,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 public class FindLinesMapper
         extends Mapper<LongWritable, Text, Text, Text> {
     private Set<String> mySet;
-    private boolean local = true;
+    private boolean local = false;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException  {
@@ -44,7 +45,7 @@ public class FindLinesMapper
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String[] words;
-        String fileName = ((FileSplit) context.getInputSplit()).getPath().getName();
+        String fileName = ((MyInputSplit) context.getInputSplit()).getPath().getName();
         words = value.toString().split("[^a-zA-Z]+");
         for (String word : words) {
             if (word.length() == 0 || this.mySet.contains(word)) continue;

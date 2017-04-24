@@ -5,10 +5,7 @@ package com.razvan.reducer;
  */
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -27,7 +24,7 @@ public class FindLinesReducer
             String fileName = words[0];
             String lineIndex = words[1];
             if (!myMap.containsKey(fileName)) {
-                Set<String> mySet = new HashSet<String>();
+                Set<String> mySet = new TreeSet<String>();
                 mySet.add(lineIndex);
                 myMap.put(fileName, mySet);
                 continue;

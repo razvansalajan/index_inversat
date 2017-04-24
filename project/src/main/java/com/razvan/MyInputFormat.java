@@ -36,9 +36,10 @@ public class MyInputFormat
 
 //    @Override
 //    protected boolean isSplitable(JobContext context, Path file) {
+//        context.getConfiguration();
 //        return false;
 //    }
-//
+
 
     @Override
     public List<InputSplit> getSplits(JobContext job) throws IOException {
@@ -48,6 +49,7 @@ public class MyInputFormat
 
         while (i$.hasNext()) {
             FileStatus status = (FileStatus) i$.next();
+//            job.getConfiguration();
             splits.addAll(myGetSplitsForFile(status, job.getConfiguration()));
         }
 
@@ -55,10 +57,10 @@ public class MyInputFormat
     }
 
 
-    public static List<FileSplit> myGetSplitsForFile(FileStatus status, Configuration conf) throws IOException {
+    public static List<InputSplit> myGetSplitsForFile(FileStatus status, Configuration conf) throws IOException {
         ArrayList splits = new ArrayList();
         Path fileName = status.getPath();
-        Integer numLinesPerSplit = 100;
+        Integer numLinesPerSplit = 4000;
         if(status.isDir()) {
             throw new IOException("Not a file: " + fileName);
         } else {
@@ -73,22 +75,24 @@ public class MyInputFormat
                 long begin = 0L;
                 long length = 0L;
                 boolean num = true;
-                int idxLine = 0;
+                int currentIndex = 0;
+                int lastIdxLine = currentIndex + 1;
                 int var18;
                 while((var18 = lr.readLine(line)) > 0) {
                     ++numLines;
-                    ++idxLine;
+                    ++currentIndex;
                     length += (long)var18;
                     if(numLines == numLinesPerSplit) {
-                        splits.add(createFileSplit(idxLine, fileName, begin, length));
+                        splits.add(createFileSplit(lastIdxLine, fileName, begin, length));
+                        lastIdxLine = currentIndex + 1;
                         begin += length;
                         length = 0L;
                         numLines = 0;
                     }
                 }
-
+//                assert(idxLine > 100);
                 if(numLines != 0) {
-                    splits.add(createFileSplit(idxLine, fileName, begin, length));
+                    splits.add(createFileSplit(lastIdxLine, fileName, begin, length));
                 }
             } finally {
                 if(lr != null) {
@@ -96,12 +100,16 @@ public class MyInputFormat
                 }
 
             }
-
+            System.out.println(fileName);
+            for(Object x : splits){
+//                MyInputSplit =
+                System.out.println(((MyInputSplit)x).index + " " + ((MyInputSplit)x).getStart());
+            }
             return splits;
         }
     }
 
-    protected static MyInputSplit createFileSplit(Integer idxLine, Path fileName, long begin, long length) {
+    protected static InputSplit createFileSplit(Integer idxLine, Path fileName, long begin, long length) {
         return begin == 0L?new MyInputSplit(idxLine, fileName, begin, length - 1L, new String[0]):new MyInputSplit(idxLine, fileName, begin - 1L, length, new String[0]);
     }
 
